@@ -22,12 +22,12 @@ class ModelOcropy(keras.Model):
             input_shape = (None, self.img_height, 1)
 
         # data input
-        input_x = keras.layers.Input(input_shape, name='X')
+        input_x = keras.layers.Input(input_shape, name='x')
 
         # training inputs
-        input_y = keras.layers.Input((None,), name='Y')
-        input_x_widths = keras.layers.Input([1], name='X_widths')
-        input_y_widths = keras.layers.Input([1], name='Y_widths')
+        input_y = keras.layers.Input((None,), name='y')
+        input_x_widths = keras.layers.Input([1], name='x_widths')
+        input_y_widths = keras.layers.Input([1], name='y_widths')
 
         # network
         lstm = keras.layers.LSTM(self.lstm_size, return_sequences=True, name='lstm')
