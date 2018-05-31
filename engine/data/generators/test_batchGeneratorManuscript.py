@@ -7,19 +7,19 @@ from engine.data.generators.batch_generator_manuscript import BatchGeneratorManu
 
 class TestBatchGeneratorManuscript(TestCase):
     def setUp(self):
-        self.generator = BatchGeneratorManuscript('fixtures/manuscript/')
+        self.generator = BatchGeneratorManuscript('../../../fixtures/manuscript/')
 
     def test_len(self):
-        self.assertEqual(len(self.generator) == 7)
+        self.assertEqual(len(self.generator), 7)
 
     def test_getitem(self):
         item: dict = self.generator.__getitem__(0)
         keys = item.keys()
 
-        self.assertIn('x' in keys)
-        self.assertIn('y' in keys)
-        self.assertIn('x_widths' in keys)
-        self.assertIn('y_widths' in keys)
+        self.assertIn('x', keys)
+        self.assertIn('y', keys)
+        self.assertIn('x_widths', keys)
+        self.assertIn('y_widths', keys)
 
         x, x_widths, y, y_widths = item['x'], item['x_widths'], item['y'], item['y_widths']
         self.assertIs(type(x), np.ndarray)
