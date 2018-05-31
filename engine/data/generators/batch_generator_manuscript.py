@@ -61,7 +61,7 @@ class BatchGeneratorManuscript(keras.utils.Sequence):
         y = np.array([self.alphabet.find(c) for c in y_text])
         y_width = len(y)
 
-        return {'x': x, 'x_widths': x_width, 'y': y, 'y_widths': y_width}
+        return {'x': x, 'x_widths': x_width, 'y': y, 'y_widths': y_width}, y
 
     def extract_meta_data(self, meta_file_path: str):
         # XML element tree

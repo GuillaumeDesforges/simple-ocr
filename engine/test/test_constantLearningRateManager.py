@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from .lr import ConstantLearningRateManager
+from engine.managers.lr import ConstantLearningRateManager
 
 
 class TestConstantLearningRateManager(TestCase):
