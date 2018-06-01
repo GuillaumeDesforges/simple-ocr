@@ -21,7 +21,7 @@ class Trainer:
     def train(self):
         lr = self.lr_manager.get_lr()
         optimizer = keras.optimizers.Adam(lr, clipnorm=5)
-        self.model.compile(optimizer=optimizer, loss={'ctc': lambda _, loss: loss})
+        self.model.compile(optimizer=optimizer, loss={'ctc_loss': lambda _, loss: loss})
 
         self.model.fit_generator(self.train_batch_generator,
                                  validation_data=self.test_batch_generator,

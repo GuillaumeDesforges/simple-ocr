@@ -1,12 +1,19 @@
 import keras
 
 
-def ctc_lambda_func(args):
+def ctc_loss_func(args):
     y_pred, y_true, input_x_width, input_y_width = args
     # the 2 is critical here since the first couple outputs of the RNN
     # tend to be garbage:
     # y_pred = y_pred[:, 2:, :]
     return keras.backend.ctc_batch_cost(y_true, y_pred, input_x_width, input_y_width)
+
+
+def ctc_decode_func(args):
+    y_pred, input_x_widths = args
+    flattened_input_x_width = keras.backend.reshape(input_x_widths, (-1,))
+    top_k_decoded, _ = keras.backend.ctc_decode(y_pred, flattened_input_x_width)
+    return top_k_decoded[0]
 
 
 class ModelOcropy(keras.Model):
@@ -39,15 +46,15 @@ class ModelOcropy(keras.Model):
         y_pred = keras.layers.Softmax(name='y_pred')(dense)
 
         # ctc loss
-        ctc = keras.layers.Lambda(ctc_lambda_func, output_shape=[1], name='ctc')(
+        ctc = keras.layers.Lambda(ctc_loss_func, output_shape=[1], name='ctc_loss')(
             [dense, input_y, input_x_widths, input_y_widths]
+        )
+        decode = keras.layers.Lambda(ctc_decode_func, output_shape=[None], name='decode')(
+            [y_pred, input_x_widths]
         )
 
         # init keras model
-        super().__init__(inputs=[input_x, input_x_widths, input_y, input_y_widths], outputs=[y_pred, ctc])
+        super().__init__(inputs=[input_x, input_x_widths, input_y, input_y_widths], outputs=[decode, y_pred, ctc])
 
         # ctc decoder
-        flattened_input_x_width = keras.backend.reshape(input_x_widths, (-1,))
-        top_k_decoded, _ = keras.backend.ctc_decode(y_pred, flattened_input_x_width)
-        self.decoder = keras.backend.function([input_x, flattened_input_x_width], [top_k_decoded[0]])
         # decoded_sequences = self.decoder([input_x, flattened_input_x_width])

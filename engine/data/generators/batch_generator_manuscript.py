@@ -53,13 +53,14 @@ class BatchGeneratorManuscript(keras.utils.Sequence):
         # line image data
         img_file_path = line[0]
         img = Image.open(img_file_path).convert('L')
-        x = np.array(img)
-        x_width = x.shape[0]
+        x = np.array(img)[np.newaxis, ..., np.newaxis]
+        # TODO resize height
+        x_width = np.array([img.size[1]])
 
         # line text data
         y_text = line[1]
         y = np.array([self.alphabet.find(c) for c in y_text])
-        y_width = len(y)
+        y_width = np.array([len(y)])
 
         return {'x': x, 'x_widths': x_width, 'y': y, 'y_widths': y_width}, y
 
