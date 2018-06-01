@@ -30,12 +30,24 @@ class ModelOcropy(keras.Model):
         input_y_widths = keras.layers.Input([1], name='y_widths')
 
         # network
-        lstm = keras.layers.LSTM(self.lstm_size, return_sequences=True, name='lstm')
-        bidirectional_lstm = keras.layers.Bidirectional(lstm, name='bidirectional lstm')(input_x)
+        flattened_input_x = keras.layers.Reshape((-1, self.img_height))(input_x)
+        bidirectional_lstm = keras.layers.Bidirectional(
+            keras.layers.LSTM(self.lstm_size, return_sequences=True, name='lstm'),
+            name='bidirectional_lstm'
+        )(flattened_input_x)
         dense = keras.layers.Dense(self.alphabet_size, activation='relu')(bidirectional_lstm)
+        y_pred = keras.layers.Softmax(name='y_pred')(dense)
 
         # ctc loss
         ctc = keras.layers.Lambda(ctc_lambda_func, output_shape=[1], name='ctc')(
-            [dense, input_y, input_x_widths, input_y_widths])
+            [dense, input_y, input_x_widths, input_y_widths]
+        )
 
-        super().__init__(inputs=[input_x, input_x_widths, input_y, input_y_widths], outputs=[dense, ctc])
+        # init keras model
+        super().__init__(inputs=[input_x, input_x_widths, input_y, input_y_widths], outputs=[y_pred, ctc])
+
+        # ctc decoder
+        flattened_input_x_width = keras.backend.reshape(input_x_widths, (-1,))
+        top_k_decoded, _ = keras.backend.ctc_decode(y_pred, flattened_input_x_width)
+        self.decoder = keras.backend.function([input_x, flattened_input_x_width], [top_k_decoded[0]])
+        # decoded_sequences = self.decoder([input_x, flattened_input_x_width])
