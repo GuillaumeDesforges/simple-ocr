@@ -7,7 +7,8 @@ from engine.data.generators.batch_generator_iam_handwriting import BatchGenerato
 
 class TestBatchGeneratorManuscript(TestCase):
     def setUp(self):
-        self.generator = BatchGeneratorIAMHandwriting('../../fixtures/manuscript/')
+        self.img_height = 48
+        self.generator = BatchGeneratorIAMHandwriting('../../fixtures/iam_handwriting/', self.img_height)
 
     def test_len(self):
         self.assertEqual(len(self.generator), 7)
@@ -25,5 +26,10 @@ class TestBatchGeneratorManuscript(TestCase):
         x, x_widths, y, y_widths = x_dict['x'], x_dict['x_widths'], x_dict['y'], x_dict['y_widths']
         self.assertIs(type(x), np.ndarray)
         self.assertIs(type(y), np.ndarray)
-        self.assertIs(type(x_widths), int)
-        self.assertIs(type(y_widths), int)
+        self.assertIs(type(x_widths), np.ndarray)
+        self.assertIs(type(y_widths), np.ndarray)
+
+        self.assertEqual(len(x.shape), 4)
+        self.assertEqual(len(y.shape), 2)
+        self.assertEqual(len(x_widths.shape), 1)
+        self.assertEqual(len(y_widths.shape), 1)

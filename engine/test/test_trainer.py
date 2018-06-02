@@ -9,12 +9,12 @@ from engine.trainer import Trainer
 class TestTrainer(TestCase):
     def setUp(self):
         self.img_height = 48
-        self.train_batch_generator = BatchGeneratorIAMHandwriting('../../fixtures/manuscript/', self.img_height)
-        self.test_batch_generator = BatchGeneratorIAMHandwriting('../../fixtures/manuscript/', self.img_height)
+        self.epochs = 1
+        self.train_batch_generator = BatchGeneratorIAMHandwriting('../../fixtures/iam_handwriting/', self.img_height)
+        self.test_batch_generator = BatchGeneratorIAMHandwriting('../../fixtures/iam_handwriting/', self.img_height)
         self.alphabet = self.test_batch_generator.alphabet
         self.model = ModelOcropy(self.alphabet, self.img_height)
         self.lr_manager = ConstantLearningRateManager(lr=0.01)
-        self.epochs = 5
         self.trainer = Trainer(self.model,
                                self.train_batch_generator,
                                self.test_batch_generator,

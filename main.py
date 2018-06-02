@@ -17,7 +17,7 @@ def main():
         img_height = 48
         epochs = 1
         train_data_generator = BatchGeneratorIAMHandwriting('data/', img_height)
-        test_data_generator = BatchGeneratorIAMHandwriting('fixtures/manuscript/', img_height,
+        test_data_generator = BatchGeneratorIAMHandwriting('fixtures/iam_handwriting/', img_height,
                                                            train_data_generator.alphabet)
         model = ModelOcropy(train_data_generator.alphabet, img_height)
         lr_manager = ConstantLearningRateManager(lr=0.0001)
