@@ -59,7 +59,11 @@ class Controller:
         self.ui.apply_optimizer.setEnabled(True)
     
     def set_lrate(self):
-        self.lrate=float(self.ui.set_lrate.currentText())
+        if self.ui.set_lrate.currentText() == "Adaptative" :
+            # Todo
+            pass
+        else : 
+            self.lrate=float(self.ui.set_lrate.currentText())
         
         
     def set_model(self):

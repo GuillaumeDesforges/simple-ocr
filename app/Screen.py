@@ -69,6 +69,7 @@ class Ocr_screen(QtGui.QTabWidget):
         self.set_lrate.addItem("0.0001")
         self.set_lrate.addItem("0.00001")
         self.set_lrate.addItem("0.000001")
+        self.set_lrate.addItem("Adaptative")
         self.apply_lrate = QtGui.QPushButton("Apply")
         
         self.lrate_panel = QtGui.QHBoxLayout()
@@ -199,9 +200,9 @@ def main():
     
     # Test
     gui.controller.preview("test.png")
-    file =  codecs.open("gt.txt", 'r', encoding='utf-8')
-    gui.controller.set_gt(file.readline())
-    gui.controller.set_predicted(file.readline())
+    text =  codecs.open("gt.txt", 'r', encoding='utf-8').readline()
+    gui.controller.set_gt(text)
+    gui.controller.set_predicted(text)
     gui.controller.set_loss("3.14")
     gui.controller.set_dist("0")
     
