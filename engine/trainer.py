@@ -6,13 +6,15 @@ class Trainer:
                  model: keras.Model,
                  train_batch_generator: keras.utils.Sequence,
                  test_batch_generator: keras.utils.Sequence,
+                 multi_process_batch_generation: bool = True,
                  initial_epoch: int = 0,
                  epochs: int = 1,
                  base_lr: int = 0.01,
-                 callbacks=None):
+                 callbacks: list = None):
         self.model = model
         self.train_batch_generator = train_batch_generator
         self.test_batch_generator = test_batch_generator
+        self.multi_process_batch_generation = multi_process_batch_generation
         self.initial_epoch = initial_epoch
         self.epochs = epochs
         self.base_lr = base_lr
@@ -23,11 +25,19 @@ class Trainer:
         optimizer = keras.optimizers.Adam(lr, clipnorm=5)
         self.model.compile(optimizer=optimizer, loss={'ctc': lambda _, loss: loss})
 
-        self.model.fit_generator(self.train_batch_generator,
-                                 validation_data=self.test_batch_generator,
-                                 use_multiprocessing=True,
-                                 workers=4,
-                                 max_queue_size=10,
-                                 initial_epoch=self.initial_epoch,
-                                 epochs=self.epochs,
-                                 callbacks=self.callbacks)
+        train_params = {
+            'generator': self.train_batch_generator,
+            'validation_data': self.test_batch_generator,
+            'max_queue_size': 10,
+            'initial_epoch': self.initial_epoch,
+            'epochs': self.epochs,
+            'callbacks': self.callbacks
+        }
+        if self.multi_process_batch_generation:
+            multi_process_params = {
+                'use_multiprocessing': True,
+                'workers': 4,
+            }
+            train_params.update(multi_process_params)
+
+        self.model.fit_generator(**train_params)

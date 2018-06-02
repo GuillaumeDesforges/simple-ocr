@@ -8,15 +8,16 @@ from engine.trainer import Trainer
 
 
 def main():
+    # cmd args
     parser = argparse.ArgumentParser("A Python command-line tool for training ocr models")
     parser.add_argument('generator', choices=['iam'])
     parser.add_argument('data_path', type=str)
-
+    parser.add_argument('--epochs', type=int, default=1)
     args = parser.parse_args()
 
     # parameters
     img_height = 48
-    epochs = 1
+    epochs = args.epochs
     data_path = args.data_path
 
     # data generators
@@ -32,9 +33,9 @@ def main():
 
     # callbacks
     callback_lr_plateau = keras.callbacks.ReduceLROnPlateau(
-        monitor='ctc_loss',
+        monitor='val_ctc_loss',
         factor=0.1,
-        patience=5,
+        patience=2,
         verbose=1)
     callbacks = [callback_lr_plateau]
 
