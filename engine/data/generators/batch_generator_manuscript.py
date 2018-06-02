@@ -7,10 +7,12 @@ from PIL import Image
 
 
 class BatchGeneratorManuscript(keras.utils.Sequence):
-    def __init__(self, path_to_data: str):
+    def __init__(self, path_to_data: str, img_height: int):
         super().__init__()
 
         self.path_to_data = path_to_data
+        self.img_height = img_height
+
         self.path_to_meta_data = os.path.join(path_to_data, 'meta')
         self.path_to_img_data = os.path.join(path_to_data, 'img')
 
@@ -41,6 +43,11 @@ class BatchGeneratorManuscript(keras.utils.Sequence):
 
         # TODO build alphabet
         self.alphabet = ''
+        for line in self.lines:
+            _, sample_line_text = line
+            for char in sample_line_text:
+                if self.alphabet.find(char) == -1:
+                    self.alphabet += char
 
         # NOTE convert line text to encoded int array label ?
 
@@ -53,15 +60,20 @@ class BatchGeneratorManuscript(keras.utils.Sequence):
         # line image data
         img_file_path = line[0]
         img = Image.open(img_file_path).convert('L')
+        in_width, in_height = img.size
+        out_width = int(in_width * self.img_height / in_height)
+        img = img.resize((out_width, self.img_height), resample=Image.NEAREST)
         x = np.array(img)[np.newaxis, ..., np.newaxis]
-        # TODO resize height
-        x_width = np.array([img.size[1]])
+        x = np.swapaxes(x, 1, 2)
+        x_width = np.array([out_width])
 
         # line text data
         y_text = line[1]
-        y = np.array([self.alphabet.find(c) for c in y_text])
+        y = np.array([self.alphabet.find(c) for c in y_text])[np.newaxis, ...]
         y_width = np.array([len(y)])
 
+        # STACK to fix ctc_loss
+        # y = np.tile(y, (2, 1, 1))
         return {'x': x, 'x_widths': x_width, 'y': y, 'y_widths': y_width}, y
 
     def extract_meta_data(self, meta_file_path: str):
@@ -70,6 +82,7 @@ class BatchGeneratorManuscript(keras.utils.Sequence):
         xml_root = xml_tree.getroot()
         meta_data = {}
         sample_id = xml_root.attrib['id']
+
         sample_lines = []
         for xml_line in xml_root[1]:
             line_id = xml_line.attrib['id']
@@ -80,4 +93,5 @@ class BatchGeneratorManuscript(keras.utils.Sequence):
 
         meta_data['id'] = sample_id
         meta_data['lines'] = sample_lines
+
         return meta_data

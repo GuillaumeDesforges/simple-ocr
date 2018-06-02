@@ -8,10 +8,11 @@ from engine.trainer import Trainer
 
 class TestTrainer(TestCase):
     def setUp(self):
-        self.alphabet = 'abcdefg'
-        self.model = ModelOcropy(self.alphabet)
-        self.train_batch_generator = BatchGeneratorManuscript('../../fixtures/manuscript/')
-        self.test_batch_generator = BatchGeneratorManuscript('../../fixtures/manuscript/')
+        self.img_height = 48
+        self.train_batch_generator = BatchGeneratorManuscript('../../fixtures/manuscript/', self.img_height)
+        self.test_batch_generator = BatchGeneratorManuscript('../../fixtures/manuscript/', self.img_height)
+        self.alphabet = self.test_batch_generator.alphabet
+        self.model = ModelOcropy(self.alphabet, self.img_height)
         self.lr_manager = ConstantLearningRateManager(lr=0.01)
         self.trainer = Trainer(self.model, self.train_batch_generator, self.test_batch_generator, self.lr_manager)
 

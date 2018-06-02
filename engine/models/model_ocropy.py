@@ -17,8 +17,8 @@ def ctc_decode_func(args):
 
 
 class ModelOcropy(keras.Model):
-    def __init__(self, alphabet: str):
-        self.img_height = 48
+    def __init__(self, alphabet: str, img_height):
+        self.img_height = img_height
         self.lstm_size = 100
         self.alphabet_size = len(alphabet)
 
