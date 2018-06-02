@@ -1,7 +1,6 @@
 import argparse
 
 from engine.data.generators.batch_generator_iam_handwriting import BatchGeneratorIAMHandwriting
-from engine.managers.lr import ConstantLearningRateManager
 from engine.models.model_ocropy import ModelOcropy
 from engine.trainer import Trainer
 
@@ -14,14 +13,25 @@ def main():
     args = parser.parse_args()
 
     if args.mode == 'train':
+        # parameters
         img_height = 48
         epochs = 1
-        train_data_generator = BatchGeneratorIAMHandwriting('data/', img_height)
-        test_data_generator = BatchGeneratorIAMHandwriting('fixtures/iam_handwriting/', img_height,
-                                                           train_data_generator.alphabet)
+
+        # data generators
+        train_data_generator = BatchGeneratorIAMHandwriting('data/',
+                                                            img_height=img_height)
+        test_data_generator = BatchGeneratorIAMHandwriting('fixtures/iam_handwriting/',
+                                                           img_height=img_height,
+                                                           alphabet=train_data_generator.alphabet)
+
+        # model
         model = ModelOcropy(train_data_generator.alphabet, img_height)
-        lr_manager = ConstantLearningRateManager(lr=0.0001)
-        trainer = Trainer(model, train_data_generator, test_data_generator, lr_manager, epochs=epochs)
+
+        # callbacks
+        # TODO add LR callback
+
+        # trainer
+        trainer = Trainer(model, train_data_generator, test_data_generator, epochs=epochs)
 
         trainer.train()
 
