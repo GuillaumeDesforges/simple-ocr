@@ -18,24 +18,26 @@ class Ocr_screen(QtGui.QTabWidget):
 
         self.res = 200
         
-        
         self.window = super(Ocr_screen, self).__init__(parent)
+        
         self.tab1 = QtGui.QWidget()
         self.tab2 = QtGui.QWidget()
-        self.tab3 = QtGui.QWidget()
+        # self.tab3 = QtGui.QWidget()
         
         self.addTab(self.tab1,"Train")
         self.addTab(self.tab2,"Test")
-        self.addTab(self.tab3,"Evaluate")
+        # self.addTab(self.tab3,"Evaluate")
+        
+        self.controller = Controller(self)
         
         self.trainUI()
-        # self.testUI()
+        self.testUI()
         # self.evalUI()
         
         self.setWindowTitle("Simple Ocr")
         # self.setMinimumSize(int(5*self.res), int(4*self.res))
         
-        self.controller = Controller(self)
+        
         self.controller.bind()
 
         
@@ -47,20 +49,16 @@ class Ocr_screen(QtGui.QTabWidget):
         font.setWeight(40)
         self.big_spacer = QtGui.QSpacerItem(50, 50)
         self.small_spacer = QtGui.QSpacerItem(20, 20)
-        
       
         # Display screen 
-        
         self.label_right = QtGui.QLabel("Preview :")
         self.label_right.setFont(font)
-        
         self.screen = QtGui.QGraphicsView()
         self.scene = QtGui.QGraphicsScene(self.screen)
         self.screen.setScene(self.scene)
         self.screen.setGeometry(QtCore.QRect(0, 0, 3*self.res, 1*self.res))
         self.screen.setMinimumSize(3*self.res, 1*self.res)
         self.screen.setMaximumSize(3*self.res, 1*self.res)
-        
         
         # Select lrate
         self.label_lrate = QtGui.QLabel("Select learning rate :")
@@ -71,29 +69,24 @@ class Ocr_screen(QtGui.QTabWidget):
         self.set_lrate.addItem("0.000001")
         self.set_lrate.addItem("Adaptative")
         self.apply_lrate = QtGui.QPushButton("Apply")
-        
         self.lrate_panel = QtGui.QHBoxLayout()
         self.lrate_panel.addWidget(self.set_lrate)
         self.lrate_panel.addWidget(self.apply_lrate)
         
         # Select model
-        
         self.label_model = QtGui.QLabel("Select model :")
         self.set_model = QtGui.QComboBox()
         self.set_model.addItem("Bidirectionnal LSTM")
         self.apply_model = QtGui.QPushButton("Apply")
-        
         self.model_panel = QtGui.QHBoxLayout()
         self.model_panel.addWidget(self.set_model)
         self.model_panel.addWidget(self.apply_model)
         
         # Select optimizer
-        
         self.label_optimizer = QtGui.QLabel("Select optimizer :")
         self.set_optimizer = QtGui.QComboBox()
         self.set_optimizer.addItem("SGD")
         self.apply_optimizer = QtGui.QPushButton("Apply")
-        
         self.optimizer_panel = QtGui.QHBoxLayout()
         self.optimizer_panel.addWidget(self.set_optimizer)
         self.optimizer_panel.addWidget(self.apply_optimizer)
@@ -111,8 +104,7 @@ class Ocr_screen(QtGui.QTabWidget):
         self.end_train_button = QtGui.QPushButton("End training")
         self.end_train_button.setFont(font)
         
-        # Text stuff :
-        
+        # Right pannel :
         self.label_gt = QtGui.QLabel("Ground truth :")
         self.ground_truth = QtGui.QLineEdit()
         self.ground_truth.setText("Bonjour je suis le baguette")
@@ -120,7 +112,7 @@ class Ocr_screen(QtGui.QTabWidget):
         self.gt_panel.addWidget(self.label_gt)
         self.gt_panel.addWidget(self.ground_truth)
         
-        self.label_pred = QtGui.QLabel("Predicted    :")
+        self.label_pred = QtGui.QLabel("Predicted      :")
         self.predicted = QtGui.QLineEdit()
         self.predicted.setText("Bondour je suis le faguotte")
         self.pred_panel = QtGui.QHBoxLayout()
@@ -137,25 +129,18 @@ class Ocr_screen(QtGui.QTabWidget):
         self.loss_panel.addWidget(self.label_dist)
         self.loss_panel.addWidget(self.dist)
         
-        
         # Left layout
-        
         self.left_panel = QtGui.QVBoxLayout()
-
         self.left_panel.addWidget(self.label_left)
-
         self.left_panel.addWidget(self.label_model)
-        self.left_panel.addLayout(self.model_panel)
-        
+        self.left_panel.addLayout(self.model_panel)        
         self.left_panel.addWidget(self.label_lrate)
-        self.left_panel.addLayout(self.lrate_panel)
-        
+        self.left_panel.addLayout(self.lrate_panel)        
         self.left_panel.addWidget(self.label_optimizer)
         self.left_panel.addLayout(self.optimizer_panel)
         self.left_panel.addItem(self.small_spacer)
         
         # Right layout
-        
         self.right_panel = QtGui.QVBoxLayout()
         self.right_panel.addWidget(self.label_right)
         self.right_panel.addWidget(self.screen)
@@ -163,7 +148,6 @@ class Ocr_screen(QtGui.QTabWidget):
         self.right_panel.addLayout(self.gt_panel)
         self.right_panel.addLayout(self.pred_panel)
         self.right_panel.addLayout(self.loss_panel)
-
         
         # Main Layout
         self.main_panel = QtGui.QHBoxLayout()
@@ -172,26 +156,104 @@ class Ocr_screen(QtGui.QTabWidget):
         self.main_panel.addLayout(self.right_panel)
         
         # Bottom Layout
-        
         self.bottom_panel = QtGui.QHBoxLayout()
         self.bottom_panel.addWidget(self.start_train_button)
-        # self.bottom_panel.addItem(self.small_spacer)
         self.bottom_panel.addWidget(self.pause_train_button)
-        # self.bottom_panel.addItem(self.small_spacer)
         self.bottom_panel.addWidget(self.end_train_button)
-        
-
-
         
         # Final Layout
         self.Final_panel = QtGui.QVBoxLayout()
         self.Final_panel.addLayout(self.main_panel)
         self.Final_panel.addLayout(self.bottom_panel)
-        
     
         self.tab1.setLayout(self.Final_panel)
 
+    
+    
+    def testUI(self):
+        
+        #Larger font
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        font.setWeight(40)
+        self.big_spacer = QtGui.QSpacerItem(50, 50)
+        self.small_spacer = QtGui.QSpacerItem(20, 20)
+      
+        # Display screen 
+        self.screen2 = QtGui.QGraphicsView()
+        self.scene2 = QtGui.QGraphicsScene(self.screen2)
+        self.screen2.setScene(self.scene2)
+        self.screen2.setGeometry(QtCore.QRect(0, 0, 3*self.res, 1*self.res))
+        self.screen2.setMinimumSize(3*self.res, 1*self.res)
+        self.screen2.setMaximumSize(3*self.res, 1*self.res)
+        
+        # Select network
+        self.label_network = QtGui.QLabel("Select Network to test :")
+        self.label_network.setFont(font)
+        self.select_network = QtGui.QComboBox()
+        
+        for name in self.controller.network_names:
+            self.select_network.addItem(name)
+        
+        self.apply_network = QtGui.QPushButton("Apply")
+        self.network_panel = QtGui.QHBoxLayout()
+        self.network_panel.addWidget(self.label_network)
+        self.network_panel.addWidget(self.select_network)
+        self.network_panel.addWidget(self.apply_network)
+        
+        # Bottom layout
+        self.start_test_button = QtGui.QPushButton("Start testing")
+        self.start_test_button.setFont(font)
+        self.pause_test_button = QtGui.QPushButton("Pause testing")
+        self.pause_test_button.setFont(font)
+        self.end_test_button = QtGui.QPushButton("End testing")
+        self.end_test_button.setFont(font)
+        
+        # Text stuff :
+        
+        self.label_gt2 = QtGui.QLabel("Ground truth :")
+        self.ground_truth2 = QtGui.QLineEdit()
+        self.gt_panel2 = QtGui.QHBoxLayout()
+        self.gt_panel2.addWidget(self.label_gt2)
+        self.gt_panel2.addWidget(self.ground_truth2)
+        
+        self.label_pred2 = QtGui.QLabel("Predicted      :")
+        self.predicted2 = QtGui.QLineEdit()
+        self.pred_panel2 = QtGui.QHBoxLayout()
+        self.pred_panel2.addWidget(self.label_pred2)
+        self.pred_panel2.addWidget(self.predicted2)
+        
+        self.label_dist2 = QtGui.QLabel("Distance       :")
+        self.dist2 = QtGui.QLineEdit()
+        self.loss_panel2 = QtGui.QHBoxLayout()
+        self.loss_panel2.addWidget(self.label_dist2)
+        self.loss_panel2.addWidget(self.dist2)
+        
 
+        # Right layout
+        self.right_panel2 = QtGui.QVBoxLayout()
+        self.right_panel2.addWidget(self.screen2)
+        self.right_panel2.setAlignment(self.screen2, QtCore.Qt.AlignHCenter)
+        self.right_panel2.addLayout(self.gt_panel2)
+        self.right_panel2.addLayout(self.pred_panel2)
+        self.right_panel2.addLayout(self.loss_panel2)
+
+        
+        # Bottom Layout
+        self.bottom_panel2 = QtGui.QHBoxLayout()
+        self.bottom_panel2.addWidget(self.start_test_button)
+        self.bottom_panel2.addWidget(self.pause_test_button)
+        self.bottom_panel2.addWidget(self.end_test_button)
+        
+
+        # Final Layout
+        self.Final_panel2 = QtGui.QVBoxLayout()
+        self.Final_panel2.addLayout(self.network_panel)
+        self.Final_panel2.addLayout(self.right_panel2)
+        self.Final_panel2.addLayout(self.bottom_panel2)
+        
+    
+        self.tab2.setLayout(self.Final_panel2)
 
 def main():
     app = QtGui.QApplication(sys.argv)

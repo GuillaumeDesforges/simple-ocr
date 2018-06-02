@@ -4,6 +4,7 @@ path = os.path.dirname(inspect.getfile(inspect.currentframe()))
 os.chdir(path)
 
 from Screen import *
+from Msg_screen import *
 
 class Controller:
     def __init__(self, ui):
@@ -15,6 +16,7 @@ class Controller:
         self.lrate = 0.001
         self.model = "Bidirectionnal LSTM"
         self.optimizer = "SGD"
+        self.network_names = ["Network #1", "Network #2"]
     
 
     def bind(self):     #Assigns each widget to the correspinding function
@@ -25,10 +27,9 @@ class Controller:
         self.ui.start_train_button.clicked.connect(self.start_train)
         self.ui.end_train_button.clicked.connect(self.end_train)
         
-
-        
         self.ui.pause_train_button.setEnabled(False)
         self.ui.end_train_button.setEnabled(False)
+    
     
     def start_train(self):
         # TODO
@@ -39,6 +40,7 @@ class Controller:
         self.ui.apply_model.setEnabled(False)
         self.ui.apply_optimizer.setEnabled(False)
     
+    
     def pause_train(self):
         # TODO
         
@@ -47,9 +49,16 @@ class Controller:
         self.ui.apply_lrate.setEnabled(True)
         self.ui.apply_model.setEnabled(True)
         self.ui.apply_optimizer.setEnabled(True)
+
         
     def end_train(self):
         # TODO
+        
+        # Lets the user chose the network name
+        app = QtGui.QApplication(sys.argv)
+        window = SaveWindow(self)
+        app.exec_()
+
         
         self.ui.pause_train_button.setEnabled(False)
         self.ui.end_train_button.setEnabled(False)
