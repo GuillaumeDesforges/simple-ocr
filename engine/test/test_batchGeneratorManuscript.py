@@ -2,12 +2,12 @@ from unittest import TestCase
 
 import numpy as np
 
-from engine.data.generators.batch_generator_manuscript import BatchGeneratorManuscript
+from engine.data.generators.batch_generator_iam_handwriting import BatchGeneratorIAMHandwriting
 
 
 class TestBatchGeneratorManuscript(TestCase):
     def setUp(self):
-        self.generator = BatchGeneratorManuscript('../../fixtures/manuscript/')
+        self.generator = BatchGeneratorIAMHandwriting('../../fixtures/manuscript/')
 
     def test_len(self):
         self.assertEqual(len(self.generator), 7)

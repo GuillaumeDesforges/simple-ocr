@@ -1,6 +1,6 @@
 import argparse
 
-from engine.data.generators.batch_generator_manuscript import BatchGeneratorManuscript
+from engine.data.generators.batch_generator_iam_handwriting import BatchGeneratorIAMHandwriting
 from engine.managers.lr import ConstantLearningRateManager
 from engine.models.model_ocropy import ModelOcropy
 from engine.trainer import Trainer
@@ -16,9 +16,9 @@ def main():
     if args.mode == 'train':
         img_height = 48
         epochs = 1
-        train_data_generator = BatchGeneratorManuscript('data/', img_height)
-        test_data_generator = BatchGeneratorManuscript('fixtures/manuscript/', img_height,
-                                                       train_data_generator.alphabet)
+        train_data_generator = BatchGeneratorIAMHandwriting('data/', img_height)
+        test_data_generator = BatchGeneratorIAMHandwriting('fixtures/manuscript/', img_height,
+                                                           train_data_generator.alphabet)
         model = ModelOcropy(train_data_generator.alphabet, img_height)
         lr_manager = ConstantLearningRateManager(lr=0.0001)
         trainer = Trainer(model, train_data_generator, test_data_generator, lr_manager, epochs=epochs)
