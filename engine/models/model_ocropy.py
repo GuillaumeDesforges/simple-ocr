@@ -43,7 +43,7 @@ class ModelOcropy(keras.Model):
         y_pred = keras.layers.Softmax(name='y_pred')(dense)
 
         # ctc loss
-        ctc = keras.layers.Lambda(ctc_loss_func, output_shape=[1], name='ctc_loss')(
+        ctc = keras.layers.Lambda(ctc_loss_func, output_shape=[1], name='ctc')(
             [dense, input_y, input_x_widths, input_y_widths]
         )
         decode = keras.layers.Lambda(ctc_decode_func, output_shape=[None], name='decode')(
@@ -51,7 +51,7 @@ class ModelOcropy(keras.Model):
         )
 
         # init keras model
-        super().__init__(inputs=[input_x, input_x_widths, input_y, input_y_widths], outputs=[decode, y_pred, ctc])
+        super().__init__(inputs=[input_x, input_x_widths, input_y, input_y_widths], outputs=[decode, ctc])
 
         # ctc decoder
         # decoded_sequences = self.decoder([input_x, flattened_input_x_width])
