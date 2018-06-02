@@ -9,7 +9,7 @@ class Trainer:
                  multi_process_batch_generation: bool = True,
                  initial_epoch: int = 0,
                  epochs: int = 1,
-                 base_lr: int = 0.01,
+                 lr: float = 0.01,
                  callbacks: list = None):
         self.model = model
         self.train_batch_generator = train_batch_generator
@@ -17,12 +17,11 @@ class Trainer:
         self.multi_process_batch_generation = multi_process_batch_generation
         self.initial_epoch = initial_epoch
         self.epochs = epochs
-        self.base_lr = base_lr
+        self.lr = lr
         self.callbacks = callbacks
 
     def train(self):
-        lr = self.base_lr
-        optimizer = keras.optimizers.Adam(lr, clipnorm=5)
+        optimizer = keras.optimizers.SGD(lr=self.lr, decay=1e-6, momentum=0.9, nesterov=True, clipnorm=5)
         self.model.compile(optimizer=optimizer, loss={'ctc': lambda _, loss: loss})
 
         train_params = {
@@ -38,6 +37,7 @@ class Trainer:
                 'use_multiprocessing': True,
                 'workers': 4,
             }
-            train_params.update(multi_process_params)
+            # TODO uncomment
+            # train_params.update(multi_process_params)
 
         self.model.fit_generator(**train_params)
