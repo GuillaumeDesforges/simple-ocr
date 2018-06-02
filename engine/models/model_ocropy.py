@@ -3,9 +3,6 @@ import keras
 
 def ctc_loss_func(args):
     y_pred, y_true, input_x_width, input_y_width = args
-    # the 2 is critical here since the first couple outputs of the RNN
-    # tend to be garbage:
-    # y_pred = y_pred[:, 2:, :]
     return keras.backend.ctc_batch_cost(y_true, y_pred, input_x_width, input_y_width)
 
 

@@ -7,11 +7,12 @@ from PIL import Image
 
 
 class BatchGeneratorManuscript(keras.utils.Sequence):
-    def __init__(self, path_to_data: str, img_height: int):
+    def __init__(self, path_to_data: str, img_height: int, alphabet: str = None):
         super().__init__()
 
         self.path_to_data = path_to_data
         self.img_height = img_height
+        self.alphabet = alphabet
 
         self.path_to_meta_data = os.path.join(path_to_data, 'meta')
         self.path_to_img_data = os.path.join(path_to_data, 'img')
@@ -41,13 +42,13 @@ class BatchGeneratorManuscript(keras.utils.Sequence):
                     line = (sample_line_path, sample_line_text)
                     self.lines.append(line)
 
-        # TODO build alphabet
-        self.alphabet = ''
-        for line in self.lines:
-            _, sample_line_text = line
-            for char in sample_line_text:
-                if self.alphabet.find(char) == -1:
-                    self.alphabet += char
+        if self.alphabet is None:
+            self.alphabet = ''
+            for line in self.lines:
+                _, sample_line_text = line
+                for char in sample_line_text:
+                    if self.alphabet.find(char) == -1:
+                        self.alphabet += char
 
         # NOTE convert line text to encoded int array label ?
 

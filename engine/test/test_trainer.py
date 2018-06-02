@@ -14,7 +14,12 @@ class TestTrainer(TestCase):
         self.alphabet = self.test_batch_generator.alphabet
         self.model = ModelOcropy(self.alphabet, self.img_height)
         self.lr_manager = ConstantLearningRateManager(lr=0.01)
-        self.trainer = Trainer(self.model, self.train_batch_generator, self.test_batch_generator, self.lr_manager)
+        self.epochs = 5
+        self.trainer = Trainer(self.model,
+                               self.train_batch_generator,
+                               self.test_batch_generator,
+                               self.lr_manager,
+                               epochs=self.epochs)
 
     def test_train(self):
         self.trainer.train()
