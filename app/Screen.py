@@ -286,7 +286,7 @@ class Ocr_screen(QtGui.QTabWidget):
         self.screen3.setMaximumSize(3*self.res, 1*self.res)
         
         # Select network
-        self.label_network2 = QtGui.QLabel("Select Network to evaluate :")
+        self.label_network2 = QtGui.QLabel("Select Network for translation :")
         self.label_network2.setFont(font)
         self.select_network2 = QtGui.QComboBox()
         
@@ -300,7 +300,7 @@ class Ocr_screen(QtGui.QTabWidget):
         self.network_panel2.addWidget(self.apply_network2)
         
         # Select book page
-        self.label_page = QtGui.QLabel("Select Book page to translate :")
+        self.label_page = QtGui.QLabel("Select Book Page to translate  :")
         self.label_page.setFont(font)
         self.select_page = QtGui.QComboBox()
         
@@ -347,8 +347,8 @@ class Ocr_screen(QtGui.QTabWidget):
 
         # Final Layout
         self.Final_panel3 = QtGui.QVBoxLayout()
-        self.Final_panel3.addLayout(self.network_panel2)
         self.Final_panel3.addLayout(self.page_panel)
+        self.Final_panel3.addLayout(self.network_panel2)
         self.Final_panel3.addLayout(self.right_panel3)
         self.Final_panel3.addLayout(self.bottom_panel3)
         
