@@ -1,4 +1,6 @@
 import argparse
+import os
+from time import gmtime, strftime
 
 import keras
 
@@ -14,10 +16,12 @@ def main():
     parser.add_argument('generator', choices=['iam'])
     parser.add_argument('data_path', type=str)
     parser.add_argument('--epochs', type=int, default=1)
-    parser.add_argument('--steps_epochs', type=int, default=None)
+    parser.add_argument('--steps-epochs', type=int, default=None)
     parser.add_argument('--lr', type=float, default=0.01)
-    parser.add_argument('--plateau_reduce_lr', type=bool, default=True)
-    parser.add_argument('--image_height', type=int, default=48)
+    parser.add_argument('--plateau-reduce-lr', type=bool, default=True)
+    parser.add_argument('--image-height', type=int, default=48)
+    parser.add_argument('--levenshtein', type=bool, default=True)
+    parser.add_argument('--tensorboard', type=bool, default=True)
     args = parser.parse_args()
 
     # parameters
@@ -26,6 +30,8 @@ def main():
     epochs = args.epochs
     lr = args.lr
     reduce_lr_on_plateau = args.plateau_reduce_lr
+    levenshtein = args.levenshtein
+    tensorboard = args.tensorboard
 
     # data generators
     train_data_generator = BatchGeneratorIAMHandwriting(data_path,
@@ -42,17 +48,29 @@ def main():
     model = ModelOcropy(train_data_generator.alphabet, img_height)
 
     # callbacks
+    str_date_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
     callbacks = []
     if reduce_lr_on_plateau:
         callback_lr_plateau = keras.callbacks.ReduceLROnPlateau(
             monitor='val_ctc_loss',
             factor=0.1,
-            patience=5,
-            verbose=1,
-            cooldown=5)
+            patience=4,
+            verbose=1)
         callbacks.append(callback_lr_plateau)
-    callback_levenshtein = LevenshteinCallback(test_data_generator, size=10)
-    callbacks.append(callback_levenshtein)
+    if levenshtein:
+        callback_levenshtein = LevenshteinCallback(test_data_generator, size=10)
+        callbacks.append(callback_levenshtein)
+    if tensorboard:
+        log_path = os.path.join("logs", str_date_time)
+        callback_tensorboard = keras.callbacks.TensorBoard(log_dir=log_path, batch_size=1)
+        callbacks.append(callback_tensorboard)
+    if True:
+        if not os.path.exists("checkpoints"):
+            os.mkdir("checkpoints")
+        checkpoints_path = os.path.join("checkpoints", str_date_time)
+        callback_checkpoint = keras.callbacks.ModelCheckpoint(checkpoints_path, monitor='val_loss', verbose=1,
+                                                              save_best_only=True, save_weights_only=True)
+        callbacks.append(callback_checkpoint)
 
     # trainer
     trainer = Trainer(
