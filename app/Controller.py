@@ -17,9 +17,14 @@ class Controller:
         self.model = "Bidirectionnal LSTM"
         self.optimizer = "SGD"
         self.network_names = ["Network #1", "Network #2"]
+        self.network_name = self.network_names[0]
+        self.page_names = ["Bodmer - p1", "Bodmer - p2"]
+        self.page_name = self.page_names[0]
     
+    
+    ## Train Window ##
 
-    def bind(self):     #Assigns each widget to the correspinding function
+    def bind_train(self):     #Assigns each widget to the correspinding function
         self.ui.apply_lrate.clicked.connect(self.set_lrate)
         self.ui.apply_optimizer.clicked.connect(self.set_optimizer)
         self.ui.apply_model.clicked.connect(self.set_model)
@@ -29,7 +34,7 @@ class Controller:
         
         self.ui.pause_train_button.setEnabled(False)
         self.ui.end_train_button.setEnabled(False)
-    
+        
     
     def start_train(self):
         # TODO
@@ -106,6 +111,112 @@ class Controller:
         self.ui.screen.setScene(self.ui.scene)
     
     
+    ## Test Window ##
+    
+    def bind_test(self):
+        self.ui.apply_network.clicked.connect(self.set_network)
+        self.ui.pause_test_button.clicked.connect(self.pause_test)
+        self.ui.start_test_button.clicked.connect(self.start_test)
+        self.ui.end_test_button.clicked.connect(self.end_test)
+        
+        self.ui.pause_test_button.setEnabled(False)
+        self.ui.end_test_button.setEnabled(False)
+        
+    
+    def start_test(self):
+        # TODO
+        
+        print('Testing Network "' + self.network_name + '"')
+        
+        self.ui.start_test_button.setEnabled(False)
+        self.ui.pause_test_button.setEnabled(True)
+        self.ui.end_test_button.setEnabled(True)
+        self.ui.apply_network.setEnabled(False)
     
     
+    def pause_test(self):
+        # TODO
+        
+        self.ui.start_test_button.setEnabled(True)
+        self.ui.pause_test_button.setEnabled(False)
+
+        
+    def end_test(self):
+        # TODO
+        
+        self.ui.start_test_button.setEnabled(True)
+        self.ui.pause_test_button.setEnabled(False)
+        self.ui.end_test_button.setEnabled(False)
+        self.ui.apply_network.setEnabled(True)
+    
+    
+    def set_network(self):
+        self.network_name = self.ui.select_network.currentText()
+    
+    
+    def set_gt_test(self, text):
+        self.ui.ground_truth2.setText(text)
+    
+    
+    def set_predicted_test(self, text):
+        self.ui.predicted2.setText(text)
+
+    
+    def set_dist_test(self, text):
+        self.ui.dist2.setText(text)
+    
+    
+    ## Validation window
+    
+    def bind_valid(self):
+        self.ui.apply_network2.clicked.connect(self.set_network_eval)
+        self.ui.apply_page.clicked.connect(self.set_page)
+        self.ui.pause_eval_button.clicked.connect(self.pause_eval)
+        self.ui.start_eval_button.clicked.connect(self.start_eval)
+        self.ui.end_eval_button.clicked.connect(self.end_eval)
+        
+        self.ui.pause_eval_button.setEnabled(False)
+        self.ui.end_eval_button.setEnabled(False)
+        
+    
+    def start_eval(self):
+        # TODO
+        
+        print('Translating page  "' + self.page_name + '", with network  "' + self.network_name + '"')
+        
+        self.ui.start_eval_button.setEnabled(False)
+        self.ui.pause_eval_button.setEnabled(True)
+        self.ui.end_eval_button.setEnabled(True)
+        self.ui.apply_page.setEnabled(False)
+        self.ui.apply_network2.setEnabled(False)
+    
+    
+    def pause_eval(self):
+        # TODO
+        
+        self.ui.start_eval_button.setEnabled(True)
+        self.ui.pause_eval_button.setEnabled(False)
+
+        
+    def end_eval(self):
+        # TODO
+        
+        self.ui.start_eval_button.setEnabled(True)
+        self.ui.pause_eval_button.setEnabled(False)
+        self.ui.end_eval_button.setEnabled(False)
+        self.ui.apply_page.setEnabled(True)
+        self.ui.apply_network2.setEnabled(True)
+    
+    
+    def set_network_eval(self):
+        self.network_name = self.ui.select_network2.currentText()
+    
+    
+    def set_page(self):
+        self.page_name = self.ui.select_page.currentText()
+    
+    
+    def set_predicted_eval(self, text):
+        self.ui.predicted3.setText(text)
+
     

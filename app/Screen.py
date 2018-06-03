@@ -14,32 +14,44 @@ from Controller import *
 
 
 class Ocr_screen(QtGui.QTabWidget):
-    def __init__(self, parent = None):
+    def __init__(self, appli, parent = None, ):
 
         self.res = 200
+        self.appli = appli
+        self.parent = parent
         
-        self.window = super(Ocr_screen, self).__init__(parent)
+        self.create_window()
+        
+        self.controller.bind_test()
+        self.controller.bind_train()
+        self.controller.bind_valid()
+        
+    
+    def create_window(self):
+        
+        self.window = super(Ocr_screen, self).__init__(self.parent)
         
         self.tab1 = QtGui.QWidget()
         self.tab2 = QtGui.QWidget()
-        # self.tab3 = QtGui.QWidget()
+        self.tab3 = QtGui.QWidget()
         
         self.addTab(self.tab1,"Train")
         self.addTab(self.tab2,"Test")
-        # self.addTab(self.tab3,"Evaluate")
+        self.addTab(self.tab3,"Validation")
         
         self.controller = Controller(self)
         
         self.trainUI()
         self.testUI()
-        # self.evalUI()
+        self.evalUI()
         
         self.setWindowTitle("Simple Ocr")
         # self.setMinimumSize(int(5*self.res), int(4*self.res))
+        #Logo
         
-        
-        self.controller.bind()
-
+        app_icon = QtGui.QIcon()
+        app_icon.addFile('logo2.png', QtCore.QSize(65,65))
+        self.appli.setWindowIcon(app_icon)
         
     def trainUI(self):
         
@@ -254,10 +266,98 @@ class Ocr_screen(QtGui.QTabWidget):
         
     
         self.tab2.setLayout(self.Final_panel2)
+    
+    
+    def evalUI(self):
+        
+        #Larger font
+        font = QtGui.QFont()
+        font.setPointSize(11)
+        font.setWeight(40)
+        self.big_spacer = QtGui.QSpacerItem(50, 50)
+        self.small_spacer = QtGui.QSpacerItem(20, 20)
+      
+        # Display screen 
+        self.screen3 = QtGui.QGraphicsView()
+        self.scene3 = QtGui.QGraphicsScene(self.screen3)
+        self.screen3.setScene(self.scene3)
+        self.screen3.setGeometry(QtCore.QRect(0, 0, 3*self.res, 1*self.res))
+        self.screen3.setMinimumSize(3*self.res, 1*self.res)
+        self.screen3.setMaximumSize(3*self.res, 1*self.res)
+        
+        # Select network
+        self.label_network2 = QtGui.QLabel("Select Network to evaluate :")
+        self.label_network2.setFont(font)
+        self.select_network2 = QtGui.QComboBox()
+        
+        for name in self.controller.network_names:
+            self.select_network2.addItem(name)
+        
+        self.apply_network2 = QtGui.QPushButton("Apply")
+        self.network_panel2 = QtGui.QHBoxLayout()
+        self.network_panel2.addWidget(self.label_network2)
+        self.network_panel2.addWidget(self.select_network2)
+        self.network_panel2.addWidget(self.apply_network2)
+        
+        # Select book page
+        self.label_page = QtGui.QLabel("Select Book page to translate :")
+        self.label_page.setFont(font)
+        self.select_page = QtGui.QComboBox()
+        
+        for name in self.controller.page_names:
+            self.select_page.addItem(name)
+        
+        self.apply_page = QtGui.QPushButton("Apply")
+        self.page_panel = QtGui.QHBoxLayout()
+        self.page_panel.addWidget(self.label_page)
+        self.page_panel.addWidget(self.select_page)
+        self.page_panel.addWidget(self.apply_page)
+        
+        # Bottom layout
+        self.start_eval_button = QtGui.QPushButton("Start validation")
+        self.start_eval_button.setFont(font)
+        self.pause_eval_button = QtGui.QPushButton("Pause validation")
+        self.pause_eval_button.setFont(font)
+        self.end_eval_button = QtGui.QPushButton("End validation")
+        self.end_eval_button.setFont(font)
+        
+        # Text stuff :
+        
+        self.label_pred3 = QtGui.QLabel("Predicted      :")
+        self.predicted3 = QtGui.QLineEdit()
+        self.pred_panel3 = QtGui.QHBoxLayout()
+        self.pred_panel3.addWidget(self.label_pred3)
+        self.pred_panel3.addWidget(self.predicted3)
+        
+
+        # Right layout
+        self.right_panel3 = QtGui.QVBoxLayout()
+        self.right_panel3.addWidget(self.screen3)
+        self.right_panel3.setAlignment(self.screen3, QtCore.Qt.AlignHCenter)
+        self.right_panel3.addLayout(self.pred_panel3)
+
+
+        
+        # Bottom Layout
+        self.bottom_panel3 = QtGui.QHBoxLayout()
+        self.bottom_panel3.addWidget(self.start_eval_button)
+        self.bottom_panel3.addWidget(self.pause_eval_button)
+        self.bottom_panel3.addWidget(self.end_eval_button)
+        
+
+        # Final Layout
+        self.Final_panel3 = QtGui.QVBoxLayout()
+        self.Final_panel3.addLayout(self.network_panel2)
+        self.Final_panel3.addLayout(self.page_panel)
+        self.Final_panel3.addLayout(self.right_panel3)
+        self.Final_panel3.addLayout(self.bottom_panel3)
+        
+    
+        self.tab3.setLayout(self.Final_panel3)
 
 def main():
     app = QtGui.QApplication(sys.argv)
-    gui = Ocr_screen()
+    gui = Ocr_screen(app)
     gui.show()
     
     # Test
