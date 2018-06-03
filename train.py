@@ -2,6 +2,7 @@ import argparse
 
 import keras
 
+from engine.callbacks.levenshtein import LevenshteinCallback
 from engine.data.generators.batch_generator_iam_handwriting import BatchGeneratorIAMHandwriting
 from engine.models.model_ocropy import ModelOcropy
 from engine.trainer import Trainer
@@ -13,12 +14,14 @@ def main():
     parser.add_argument('generator', choices=['iam'])
     parser.add_argument('data_path', type=str)
     parser.add_argument('--epochs', type=int, default=1)
+    parser.add_argument('--steps_epochs', type=int, default=None)
     parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--plateau_reduce_lr', type=bool, default=True)
+    parser.add_argument('--image_height', type=int, default=48)
     args = parser.parse_args()
 
     # parameters
-    img_height = 48
+    img_height = args.image_height
     data_path = args.data_path
     epochs = args.epochs
     lr = args.lr
@@ -27,6 +30,9 @@ def main():
     # data generators
     train_data_generator = BatchGeneratorIAMHandwriting(data_path,
                                                         img_height=img_height)
+
+    steps_per_epochs = args.steps_epochs
+
     test_data_generator = BatchGeneratorIAMHandwriting(data_path,
                                                        img_height=img_height,
                                                        sample_size=100,
@@ -45,6 +51,8 @@ def main():
             verbose=1,
             cooldown=5)
         callbacks.append(callback_lr_plateau)
+    callback_levenshtein = LevenshteinCallback(test_data_generator, size=10)
+    callbacks.append(callback_levenshtein)
 
     # trainer
     trainer = Trainer(
@@ -53,6 +61,7 @@ def main():
         test_data_generator,
         lr=lr,
         epochs=epochs,
+        steps_per_epochs=steps_per_epochs,
         callbacks=callbacks)
 
     trainer.train()

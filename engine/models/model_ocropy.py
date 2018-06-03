@@ -35,11 +35,11 @@ class ModelOcropy(keras.Model):
 
         # network
         flattened_input_x = keras.layers.Reshape((-1, self.img_height))(input_x)
-        bidirectional_lstm = keras.layers.Bidirectional(
-            keras.layers.LSTM(self.lstm_size, return_sequences=True, name='lstm'),
-            name='bidirectional_lstm'
-        )(flattened_input_x)
-        dense = keras.layers.Dense(self.alphabet_size, activation='relu')(bidirectional_lstm)
+        lstm1 = keras.layers.CuDNNLSTM(self.lstm_size, return_sequences=True, name='lstm1')(flattened_input_x)
+        lstm2 = keras.layers.CuDNNLSTM(self.lstm_size, return_sequences=True, name='lstm2', go_backwards=True)(
+            flattened_input_x)
+        lstm_out = keras.layers.Concatenate(axis=-1, name='lstm_out')([lstm1, lstm2])
+        dense = keras.layers.Dense(self.alphabet_size + 1, activation='relu')(lstm_out)
         y_pred = keras.layers.Softmax(name='y_pred')(dense)
 
         # ctc loss

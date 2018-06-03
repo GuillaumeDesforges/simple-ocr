@@ -13,10 +13,7 @@ class TestTrainer(TestCase):
         self.test_batch_generator = BatchGeneratorIAMHandwriting('../../fixtures/iam_handwriting/', self.img_height)
         self.alphabet = self.test_batch_generator.alphabet
         self.model = ModelOcropy(self.alphabet, self.img_height)
-        self.trainer = Trainer(self.model,
-                               self.train_batch_generator,
-                               self.test_batch_generator,
-                               epochs=self.epochs)
+        self.trainer = Trainer(self.model, self.train_batch_generator, self.test_batch_generator, epochs=self.epochs)
 
     def test_train(self):
         self.trainer.train()
