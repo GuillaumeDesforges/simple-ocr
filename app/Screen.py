@@ -2,7 +2,6 @@ import codecs
 import inspect
 import os
 
-
 path = os.path.dirname(os.path.dirname(inspect.getfile(inspect.currentframe())))
 os.chdir(path)
 

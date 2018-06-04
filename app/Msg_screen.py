@@ -40,10 +40,7 @@ class SaveWindow():
 
     def save(self):
         name = self.save_box.text()
-        if not name == '':
-            self.controller.network_names.append(name)
-            #TODO : Saving the model as <name> somewhere
-            print("Network saved as : " + name)
-            self.window.close()
-            self.controller.ui.select_network.addItem(name)
-            self.controller.ui.select_network2.addItem(name)
+        self.controller.save_model(name)
+        self.window.close()
+        self.controller.ui.select_network.addItem(name)
+        # self.controller.ui.select_network2.addItem(name)

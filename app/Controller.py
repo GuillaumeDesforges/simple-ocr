@@ -1,6 +1,10 @@
+import os
 from time import strftime, gmtime
 
+import editdistance
 import keras
+import numpy as np
+from PyQt4 import QtCore
 
 from app.Msg_screen import *
 from app.Progress_screen import ProgressWindow
@@ -25,6 +29,7 @@ class Controller:
         self.page_name = self.page_names[0]
         self.nb_epoch = 1
 
+        self.models = {}
     
     ## Train Window ##
 
@@ -52,8 +57,8 @@ class Controller:
                                                        alphabet=train_data_generator.alphabet)
 
         # model
-        model = ModelOcropy(train_data_generator.alphabet, img_height)
-        print(model.summary())
+        self.model = ModelOcropy(train_data_generator.alphabet, img_height)
+        print(self.model.summary())
 
         # callbacks
         str_date_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
@@ -71,7 +76,7 @@ class Controller:
 
         # trainer
         trainer = Trainer(
-            model,
+            self.model,
             train_data_generator,
             test_data_generator,
             lr=self.lrate,
@@ -94,7 +99,13 @@ class Controller:
         self.ui.apply_model.setEnabled(True)
         self.ui.start_train_button.setEnabled(True)
         self.ui.apply_optimizer.setEnabled(True)
-    
+
+    def save_model(self, name):
+        if not name == '':
+            self.network_names.append(name)
+            self.models[name] = self.model
+            print("Network registered as : " + name)
+
 
     def progress(self):
         window = ProgressWindow(self)
@@ -139,6 +150,7 @@ class Controller:
     def preview(self, picture):
         qimg = QtGui.QImage(picture)
         pixmap = QtGui.QPixmap.fromImage(qimg).scaled(int(2.9*self.ui.res), self.ui.res, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
+        self.ui.scene.clear()
         item = self.ui.scene.addPixmap(pixmap)
         self.ui.screen.setScene(self.ui.scene)
     
@@ -152,35 +164,61 @@ class Controller:
 
 
     def start_test(self):
-        # TODO
-        
         print('Testing Network "' + self.network_name + '"')
-        
 
+        data_path = '/home/arsleust/projects/simple-ocr/data/bodmer'
+        img_height = 48
+        test_data_generator = BatchGeneratorManuscript(data_path,
+                                                       img_height=img_height)
+        i = np.random.randint(0, len(test_data_generator))
 
-        
+        data = test_data_generator[i]
+        x_dict, _ = data
+        x, x_widths, y_true, y_true_widths = map(lambda k: x_dict[k][0], ['x', 'x_widths', 'y', 'y_widths'])
+        y_pred = self.model.predict(x_dict)
+
+        list_decoded = y_pred[0][0].tolist()
+        list_true = y_true.tolist()
+        text_decoded = ''.join([test_data_generator.alphabet[l] for l in list_decoded])
+        text_true = ''.join([test_data_generator.alphabet[l] for l in list_true])
+
+        sample_dist = editdistance.eval(text_decoded, text_true)
+
+        self.set_dist_test(str(sample_dist))
+        self.set_gt_test(str(text_true))
+        self.set_predicted_test(str(text_decoded))
+        line_img_path = test_data_generator.lines[i][0]
+        self.preview_test(line_img_path)
+
+        self.end_test()
+
     def end_test(self):
-        # TODO
         pass
 
-    
-    
     def set_network(self):
         self.network_name = self.ui.select_network.currentText()
-    
-    
+        if self.network_name in self.models.keys():
+            self.model = self.models[self.network_name]
+        else:
+            raise Exception("No model found", self.network_name)
+
     def set_gt_test(self, text):
         self.ui.ground_truth2.setText(text)
-    
-    
+
     def set_predicted_test(self, text):
         self.ui.predicted2.setText(text)
 
-    
     def set_dist_test(self, text):
         self.ui.dist2.setText(text)
-    
-    
+
+    def preview_test(self, picture):
+        qimg = QtGui.QImage(picture)
+        pixmap = QtGui.QPixmap.fromImage(qimg).scaled(int(2.9 * self.ui.res), self.ui.res, QtCore.Qt.KeepAspectRatio,
+                                                      QtCore.Qt.SmoothTransformation)
+        self.ui.scene2.clear()
+        item = self.ui.scene2.addPixmap(pixmap)
+        self.ui.screen2.setScene(self.ui.scene2)
+
     ## Validation window
     
     def bind_valid(self):
@@ -196,7 +234,7 @@ class Controller:
     
     def start_eval(self):
         # TODO
-        
+
         print('Translating page  "' + self.page_name + '", with network  "' + self.network_name + '"')
         
         self.ui.start_eval_button.setEnabled(False)
