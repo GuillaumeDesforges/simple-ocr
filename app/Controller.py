@@ -4,6 +4,7 @@ import keras
 
 from app.Msg_screen import *
 from app.Progress_screen import ProgressWindow
+from engine.callbacks.gui import GUICallback
 from engine.data.generators.batch_generator_manuscript import BatchGeneratorManuscript
 from engine.models.model_ocropy import ModelOcropy
 from engine.trainer import Trainer
@@ -11,7 +12,6 @@ from engine.trainer import Trainer
 
 class Controller:
     def __init__(self, ui):
-        
         #to link with the screen
         
         self.ui = ui
@@ -23,7 +23,7 @@ class Controller:
         self.network_name = self.network_names[0]
         self.page_names = ["Bodmer - p1", "Bodmer - p2"]
         self.page_name = self.page_names[0]
-        self.nb_epoch = 100
+        self.nb_epoch = 1
 
     
     ## Train Window ##
@@ -32,6 +32,7 @@ class Controller:
         self.ui.apply_lrate.clicked.connect(self.set_lrate)
         self.ui.apply_optimizer.clicked.connect(self.set_optimizer)
         self.ui.apply_model.clicked.connect(self.set_model)
+        self.ui.apply_epoch.clicked.connect(self.set_epoch)
 
         self.ui.start_train_button.clicked.connect(self.start_train)
 
@@ -47,7 +48,7 @@ class Controller:
                                                         img_height=img_height)
         test_data_generator = BatchGeneratorManuscript(data_path,
                                                        img_height=img_height,
-                                                       sample_size=100,
+                                                       sample_size=10,
                                                        alphabet=train_data_generator.alphabet)
 
         # model
@@ -57,20 +58,6 @@ class Controller:
         # callbacks
         str_date_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
         callbacks = []
-        # if reduce_lr_on_plateau:
-        #     callback_lr_plateau = keras.callbacks.ReduceLROnPlateau(
-        #         monitor='val_ctc_loss',
-        #         factor=0.1,
-        #         patience=4,
-        #         verbose=1)
-        #     callbacks.append(callback_lr_plateau)
-        # if levenshtein:
-        #     callback_levenshtein = LevenshteinCallback(test_data_generator, size=10)
-        #     callbacks.append(callback_levenshtein)
-        # if tensorboard:
-        #     log_path = os.path.join("logs", str_date_time)
-        #     callback_tensorboard = keras.callbacks.TensorBoard(log_dir=log_path, batch_size=1, )
-        #     callbacks.append(callback_tensorboard)
         if True:
             if not os.path.exists("checkpoints"):
                 os.mkdir("checkpoints")
@@ -78,6 +65,9 @@ class Controller:
             callback_checkpoint = keras.callbacks.ModelCheckpoint(checkpoints_path, monitor='val_loss', verbose=1,
                                                                   save_best_only=True, save_weights_only=True)
             callbacks.append(callback_checkpoint)
+        if True:
+            callback_gui = GUICallback(test_data_generator, self)
+            callbacks.append(callback_gui)
 
         # trainer
         trainer = Trainer(
@@ -86,29 +76,19 @@ class Controller:
             test_data_generator,
             lr=self.lrate,
             epochs=self.nb_epoch,
-            steps_per_epochs=100,
+            steps_per_epochs=20,
             callbacks=callbacks)
 
         trainer.train()
-
-        # self.ui.start_train_button.setEnabled(False)
-        # self.ui.apply_lrate.setEnabled(False)
-        # self.ui.apply_model.setEnabled(False)
-        # self.ui.apply_optimizer.setEnabled(False)
-        # self.ui.apply_epoch.setEnabled(False)
+        print("Training done")
 
         self.end_train()
 
         
     def end_train(self):
-        # TODO
-        
-
+        print("End train")
         # Lets the user chose the network name
-        app = QtGui.QApplication(sys.argv)
-        window = SaveWindow(self)
-        app.exec_()
-
+        self.savewindow = SaveWindow(self)
 
         self.ui.apply_lrate.setEnabled(True)
         self.ui.apply_model.setEnabled(True)
@@ -117,9 +97,7 @@ class Controller:
     
 
     def progress(self):
-        app = QtGui.QApplication(sys.argv)
         window = ProgressWindow(self)
-        app.exec_()
 
 
     def set_lrate(self):
@@ -131,7 +109,7 @@ class Controller:
         
         
     def set_epoch(self):
-        self.nb_epoch=float(self.ui.set_epoch.currentText())
+        self.nb_epoch = int(self.ui.set_epoch.currentText())
 
 
     def set_model(self):
@@ -159,7 +137,6 @@ class Controller:
     
 
     def preview(self, picture):
-        print("Displaying line")
         qimg = QtGui.QImage(picture)
         pixmap = QtGui.QPixmap.fromImage(qimg).scaled(int(2.9*self.ui.res), self.ui.res, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
         item = self.ui.scene.addPixmap(pixmap)

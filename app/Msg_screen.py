@@ -1,14 +1,10 @@
-from PyQt4 import QtGui, QtCore
-import sys
-import os
-import numpy as np
+from PyQt4 import QtGui
 
 
 class SaveWindow():
     def __init__(self, controller):
-
-        self.controller = controller 
-        self.window = QtGui.QWidget()
+        self.controller = controller
+        self.window = QtGui.QDialog(controller.ui)
 
         #Bottom of screen buttons
         self.save_button = QtGui.QPushButton('Save')
@@ -34,7 +30,9 @@ class SaveWindow():
         #Binding
         self.save_button.clicked.connect(self.save)
         self.cancel_button.clicked.connect(self.cancel)
-        
+
+        self.window.show()
+
     
     def cancel(self):
         self.window.close()
@@ -49,9 +47,3 @@ class SaveWindow():
             self.window.close()
             self.controller.ui.select_network.addItem(name)
             self.controller.ui.select_network2.addItem(name)
-
-
-if __name__ == "__main__":
-    app = QtGui.QApplication(sys.argv)
-    window = SaveWindow()
-    app.exec_()

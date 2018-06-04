@@ -1,7 +1,3 @@
-import inspect
-import codecs
-
-from app.Controller import *
 import codecs
 import inspect
 
@@ -110,6 +106,7 @@ class Ocr_screen(QtGui.QTabWidget):
         # Select nb epoch
         self.label_epoch = QtGui.QLabel("Select number of epochs :")
         self.set_epoch = QtGui.QComboBox()
+        self.set_epoch.addItem("1")
         self.set_epoch.addItem("100")
         self.set_epoch.addItem("500")
         self.set_epoch.addItem("1000")

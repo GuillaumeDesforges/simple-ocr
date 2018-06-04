@@ -1,14 +1,11 @@
 from PyQt4 import QtGui, QtCore
-import sys
-import os
-import numpy as np
 
 
 class ProgressWindow():
     def __init__(self, controller):
 
-        self.controller = controller 
-        self.window = QtGui.QWidget()
+        self.controller = controller
+        self.window = QtGui.QDialog()
         self.window.setMinimumSize(600,100)
 
         self.progress = QtGui.QProgressBar()
