@@ -1,16 +1,11 @@
-import os
 import inspect
-import sys 
 import codecs
-import unicodedata
 
-path = os.path.dirname(os.path.dirname(inspect.getfile(inspect.currentframe())))
-os.chdir(path+ "\\app")
+from app.Controller import *
+import codecs
+import inspect
 
-
-from PyQt4 import QtGui, QtCore
-from Controller import *
-
+from app.Controller import *
 
 
 class Ocr_screen(QtGui.QTabWidget):
@@ -373,4 +368,7 @@ def main():
     
 
 if __name__ == '__main__':
+    if os.name == 'nt':
+        path = os.path.dirname(os.path.dirname(inspect.getfile(inspect.currentframe())))
+        os.chdir(path + "\\app")
     main()

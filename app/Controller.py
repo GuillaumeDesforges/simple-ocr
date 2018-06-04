@@ -1,10 +1,4 @@
-import os
-import inspect
-path = os.path.dirname(inspect.getfile(inspect.currentframe()))
-os.chdir(path)
-
-from Screen import *
-from Msg_screen import *
+from app.Msg_screen import *
 
 class Controller:
     def __init__(self, ui):
@@ -219,4 +213,3 @@ class Controller:
     def set_predicted_eval(self, text):
         self.ui.predicted3.setText(text)
 
-    
