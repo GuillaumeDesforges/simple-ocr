@@ -1,4 +1,13 @@
+from time import strftime, gmtime
+
+import keras
+
 from app.Msg_screen import *
+from app.Progress_screen import ProgressWindow
+from engine.data.generators.batch_generator_manuscript import BatchGeneratorManuscript
+from engine.models.model_ocropy import ModelOcropy
+from engine.trainer import Trainer
+
 
 class Controller:
     def __init__(self, ui):
@@ -29,14 +38,66 @@ class Controller:
         
     
     def start_train(self):
-        # TODO
         self.progress()
-        
+
+        # data generators
+        data_path = '/home/arsleust/projects/simple-ocr/data/bodmer'
+        img_height = 48
+        train_data_generator = BatchGeneratorManuscript(data_path,
+                                                        img_height=img_height)
+        test_data_generator = BatchGeneratorManuscript(data_path,
+                                                       img_height=img_height,
+                                                       sample_size=100,
+                                                       alphabet=train_data_generator.alphabet)
+
+        # model
+        model = ModelOcropy(train_data_generator.alphabet, img_height)
+        print(model.summary())
+
+        # callbacks
+        str_date_time = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+        callbacks = []
+        # if reduce_lr_on_plateau:
+        #     callback_lr_plateau = keras.callbacks.ReduceLROnPlateau(
+        #         monitor='val_ctc_loss',
+        #         factor=0.1,
+        #         patience=4,
+        #         verbose=1)
+        #     callbacks.append(callback_lr_plateau)
+        # if levenshtein:
+        #     callback_levenshtein = LevenshteinCallback(test_data_generator, size=10)
+        #     callbacks.append(callback_levenshtein)
+        # if tensorboard:
+        #     log_path = os.path.join("logs", str_date_time)
+        #     callback_tensorboard = keras.callbacks.TensorBoard(log_dir=log_path, batch_size=1, )
+        #     callbacks.append(callback_tensorboard)
+        if True:
+            if not os.path.exists("checkpoints"):
+                os.mkdir("checkpoints")
+            checkpoints_path = os.path.join("checkpoints", str_date_time + '.hdf5')
+            callback_checkpoint = keras.callbacks.ModelCheckpoint(checkpoints_path, monitor='val_loss', verbose=1,
+                                                                  save_best_only=True, save_weights_only=True)
+            callbacks.append(callback_checkpoint)
+
+        # trainer
+        trainer = Trainer(
+            model,
+            train_data_generator,
+            test_data_generator,
+            lr=self.lrate,
+            epochs=self.nb_epoch,
+            steps_per_epochs=100,
+            callbacks=callbacks)
+
+        trainer.train()
+
         # self.ui.start_train_button.setEnabled(False)
         # self.ui.apply_lrate.setEnabled(False)
         # self.ui.apply_model.setEnabled(False)
         # self.ui.apply_optimizer.setEnabled(False)
         # self.ui.apply_epoch.setEnabled(False)
+
+        self.end_train()
 
         
     def end_train(self):
@@ -74,7 +135,7 @@ class Controller:
 
 
     def set_model(self):
-        self.model=self.ui.set_model.currentText()
+        self.model = self.ui.set_model.currentText()
         
         
     def set_optimizer(self):
