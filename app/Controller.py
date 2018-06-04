@@ -14,58 +14,53 @@ class Controller:
         self.network_name = self.network_names[0]
         self.page_names = ["Bodmer - p1", "Bodmer - p2"]
         self.page_name = self.page_names[0]
-    
+        self.nb_epoch = 100
+
     
     ## Train Window ##
 
-    def bind_train(self):     #Assigns each widget to the correspinding function
+    def bind_train(self):
         self.ui.apply_lrate.clicked.connect(self.set_lrate)
         self.ui.apply_optimizer.clicked.connect(self.set_optimizer)
         self.ui.apply_model.clicked.connect(self.set_model)
-        self.ui.pause_train_button.clicked.connect(self.pause_train)
+
         self.ui.start_train_button.clicked.connect(self.start_train)
-        self.ui.end_train_button.clicked.connect(self.end_train)
-        
-        self.ui.pause_train_button.setEnabled(False)
-        self.ui.end_train_button.setEnabled(False)
+
         
     
     def start_train(self):
         # TODO
-        self.ui.start_train_button.setEnabled(False)
-        self.ui.pause_train_button.setEnabled(True)
-        self.ui.end_train_button.setEnabled(True)
-        self.ui.apply_lrate.setEnabled(False)
-        self.ui.apply_model.setEnabled(False)
-        self.ui.apply_optimizer.setEnabled(False)
-    
-    
-    def pause_train(self):
-        # TODO
+        self.progress()
         
-        self.ui.start_train_button.setEnabled(True)
-        self.ui.pause_train_button.setEnabled(False)
-        self.ui.apply_lrate.setEnabled(True)
-        self.ui.apply_model.setEnabled(True)
-        self.ui.apply_optimizer.setEnabled(True)
+        # self.ui.start_train_button.setEnabled(False)
+        # self.ui.apply_lrate.setEnabled(False)
+        # self.ui.apply_model.setEnabled(False)
+        # self.ui.apply_optimizer.setEnabled(False)
+        # self.ui.apply_epoch.setEnabled(False)
 
         
     def end_train(self):
         # TODO
         
+
         # Lets the user chose the network name
         app = QtGui.QApplication(sys.argv)
         window = SaveWindow(self)
         app.exec_()
 
-        
-        self.ui.pause_train_button.setEnabled(False)
-        self.ui.end_train_button.setEnabled(False)
+
         self.ui.apply_lrate.setEnabled(True)
         self.ui.apply_model.setEnabled(True)
         self.ui.start_train_button.setEnabled(True)
         self.ui.apply_optimizer.setEnabled(True)
     
+
+    def progress(self):
+        app = QtGui.QApplication(sys.argv)
+        window = ProgressWindow(self)
+        app.exec_()
+
+
     def set_lrate(self):
         if self.ui.set_lrate.currentText() == "Adaptative" :
             # Todo
@@ -74,6 +69,10 @@ class Controller:
             self.lrate=float(self.ui.set_lrate.currentText())
         
         
+    def set_epoch(self):
+        self.nb_epoch=float(self.ui.set_epoch.currentText())
+
+
     def set_model(self):
         self.model=self.ui.set_model.currentText()
         
@@ -97,6 +96,7 @@ class Controller:
     def set_dist(self, text):
         self.ui.dist.setText(text)
     
+
     def preview(self, picture):
         print("Displaying line")
         qimg = QtGui.QImage(picture)
@@ -104,7 +104,8 @@ class Controller:
         item = self.ui.scene.addPixmap(pixmap)
         self.ui.screen.setScene(self.ui.scene)
     
-    
+
+
     ## Test Window ##
     
     def bind_test(self):
@@ -188,6 +189,8 @@ class Controller:
     def pause_eval(self):
         # TODO
         
+
+
         self.ui.start_eval_button.setEnabled(True)
         self.ui.pause_eval_button.setEnabled(False)
 
@@ -195,13 +198,16 @@ class Controller:
     def end_eval(self):
         # TODO
         
+
+
         self.ui.start_eval_button.setEnabled(True)
         self.ui.pause_eval_button.setEnabled(False)
         self.ui.end_eval_button.setEnabled(False)
         self.ui.apply_page.setEnabled(True)
         self.ui.apply_network2.setEnabled(True)
     
-    
+
+
     def set_network_eval(self):
         self.network_name = self.ui.select_network2.currentText()
     
