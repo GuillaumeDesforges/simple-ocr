@@ -221,10 +221,7 @@ class Ocr_screen(QtGui.QTabWidget):
         # Bottom layout
         self.start_test_button = QtGui.QPushButton("Compute")
         self.start_test_button.setFont(font)
-        # self.pause_test_button = QtGui.QPushButton("Pause testing")
-        # self.pause_test_button.setFont(font)
-        # self.end_test_button = QtGui.QPushButton("End testing")
-        self.end_test_button.setFont(font)
+
         
         # Text stuff :
         
@@ -259,8 +256,6 @@ class Ocr_screen(QtGui.QTabWidget):
         # Bottom Layout
         self.bottom_panel2 = QtGui.QHBoxLayout()
         self.bottom_panel2.addWidget(self.start_test_button)
-        self.bottom_panel2.addWidget(self.pause_test_button)
-        self.bottom_panel2.addWidget(self.end_test_button)
         
 
         # Final Layout
