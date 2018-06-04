@@ -27,18 +27,13 @@ class LevenshteinCallback(keras.callbacks.Callback):
             y_pred = self.model.predict(x_dict)
 
             list_decoded = y_pred[0][0].tolist()
-            list_pred = y_pred[1][0].argmax(axis=-1).tolist()
             list_true = y_true.tolist()
-            text_pred = ''.join(
-                [self.validation_data_generator.alphabet[l] if l < len(self.validation_data_generator.alphabet) else '*'
-                 for l in list_pred])
             text_decoded = ''.join([self.validation_data_generator.alphabet[l] for l in list_decoded])
             text_true = ''.join([self.validation_data_generator.alphabet[l] for l in list_true])
 
             sample_dist = editdistance.eval(text_decoded, text_true) / y_true_widths
             sum_dist += sample_dist
-            print('{:3d} PRED'.format(i), text_pred)
-            print('    DECO', text_decoded)
+            print('{:3d} DECO'.format(i), text_decoded)
             print('    TRUE', text_true)
             print('    DIST', sample_dist, ' X_WIDTH ', x_widths, ' Y_WIDTH ', y_true_widths)
 

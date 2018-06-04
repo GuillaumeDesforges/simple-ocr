@@ -9,14 +9,14 @@ def ctc_loss_func(args):
 def ctc_decode_func(args):
     y_pred, input_x_widths = args
     flattened_input_x_width = keras.backend.reshape(input_x_widths, (-1,))
-    top_k_decoded, _ = keras.backend.ctc_decode(y_pred, flattened_input_x_width)
+    top_k_decoded, _ = keras.backend.ctc_decode(y_pred, flattened_input_x_width, greedy=False)
     return top_k_decoded[0]
 
 
 class ModelOcropy(keras.Model):
     def __init__(self, alphabet: str, img_height):
         self.img_height = img_height
-        self.lstm_size = 200
+        self.lstm_size = 500
         self.alphabet_size = len(alphabet)
 
         # check backend input shape (channel first/last)
@@ -49,7 +49,7 @@ class ModelOcropy(keras.Model):
         decode = keras.layers.Lambda(ctc_decode_func, output_shape=[None], name='decode')([y_pred, input_x_widths])
 
         # init keras model
-        super().__init__(inputs=[input_x, input_x_widths, input_y, input_y_widths], outputs=[decode, ctc])
+        super().__init__(inputs=[input_x, input_x_widths, input_y, input_y_widths], outputs=[decode, y_pred, ctc])
 
         # ctc decoder
         # decoded_sequences = self.decoder([input_x, flattened_input_x_width])

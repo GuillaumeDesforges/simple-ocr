@@ -7,7 +7,7 @@ import keras
 from engine.callbacks.levenshtein import LevenshteinCallback
 from engine.data.generators.batch_generator_iam_handwriting import BatchGeneratorIAMHandwriting
 from engine.data.generators.batch_generator_manuscript import BatchGeneratorManuscript
-from engine.models.model_overfit import ModelOverfit
+from engine.models.model_ocropy import ModelOcropy
 from engine.trainer import Trainer
 
 
@@ -55,8 +55,7 @@ def main():
         raise Exception("Data generator is not defined.")
 
     # model
-    # TODO ocropy model back
-    model = ModelOverfit(train_data_generator.alphabet, img_height)
+    model = ModelOcropy(train_data_generator.alphabet, img_height)
     print(model.summary())
 
     # callbacks
