@@ -1,5 +1,10 @@
 import codecs
 import inspect
+import os
+
+
+path = os.path.dirname(os.path.dirname(inspect.getfile(inspect.currentframe())))
+os.chdir(path)
 
 from app.Controller import *
 
@@ -15,7 +20,7 @@ class Ocr_screen(QtGui.QTabWidget):
         
         self.controller.bind_test()
         self.controller.bind_train()
-        self.controller.bind_valid()
+        # self.controller.bind_valid()
         
     
     def create_window(self):
@@ -28,13 +33,13 @@ class Ocr_screen(QtGui.QTabWidget):
         
         self.addTab(self.tab1,"Train")
         self.addTab(self.tab2,"Test")
-        self.addTab(self.tab3,"Validation")
+        # self.addTab(self.tab3,"Validation")
         
         self.controller = Controller(self)
         
         self.trainUI()
         self.testUI()
-        self.evalUI()
+        # self.evalUI()
         
         self.setWindowTitle("Simple Ocr")
         # self.setMinimumSize(int(5*self.res), int(4*self.res))
@@ -214,11 +219,11 @@ class Ocr_screen(QtGui.QTabWidget):
         self.network_panel.addWidget(self.apply_network)
         
         # Bottom layout
-        self.start_test_button = QtGui.QPushButton("Start testing")
+        self.start_test_button = QtGui.QPushButton("Compute")
         self.start_test_button.setFont(font)
-        self.pause_test_button = QtGui.QPushButton("Pause testing")
-        self.pause_test_button.setFont(font)
-        self.end_test_button = QtGui.QPushButton("End testing")
+        # self.pause_test_button = QtGui.QPushButton("Pause testing")
+        # self.pause_test_button.setFont(font)
+        # self.end_test_button = QtGui.QPushButton("End testing")
         self.end_test_button.setFont(font)
         
         # Text stuff :

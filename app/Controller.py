@@ -148,39 +148,21 @@ class Controller:
     
     def bind_test(self):
         self.ui.apply_network.clicked.connect(self.set_network)
-        self.ui.pause_test_button.clicked.connect(self.pause_test)
         self.ui.start_test_button.clicked.connect(self.start_test)
-        self.ui.end_test_button.clicked.connect(self.end_test)
-        
-        self.ui.pause_test_button.setEnabled(False)
-        self.ui.end_test_button.setEnabled(False)
-        
-    
+
+
     def start_test(self):
         # TODO
         
         print('Testing Network "' + self.network_name + '"')
         
-        self.ui.start_test_button.setEnabled(False)
-        self.ui.pause_test_button.setEnabled(True)
-        self.ui.end_test_button.setEnabled(True)
-        self.ui.apply_network.setEnabled(False)
-    
-    
-    def pause_test(self):
-        # TODO
-        
-        self.ui.start_test_button.setEnabled(True)
-        self.ui.pause_test_button.setEnabled(False)
+
 
         
     def end_test(self):
         # TODO
-        
-        self.ui.start_test_button.setEnabled(True)
-        self.ui.pause_test_button.setEnabled(False)
-        self.ui.end_test_button.setEnabled(False)
-        self.ui.apply_network.setEnabled(True)
+        pass
+
     
     
     def set_network(self):
