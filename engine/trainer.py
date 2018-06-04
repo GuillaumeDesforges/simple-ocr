@@ -17,11 +17,7 @@ class Trainer:
         self.callbacks = callbacks
 
     def train(self):
-        optimizer = keras.optimizers.SGD(lr=self.lr,
-                                         decay=1e-6,
-                                         momentum=0.9,
-                                         nesterov=True,
-                                         clipnorm=5)
+        optimizer = keras.optimizers.Adam(lr=self.lr, clipnorm=5)
         losses = {
             'ctc': lambda _, loss: loss,
         }

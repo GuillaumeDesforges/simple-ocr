@@ -1,14 +1,15 @@
 from unittest import TestCase
 
+import matplotlib.pyplot as plt
 import numpy as np
 
 from engine.data.generators.batch_generator_iam_handwriting import BatchGeneratorIAMHandwriting
 
 
-class TestBatchGeneratorManuscript(TestCase):
+class TestBatchGeneratorIAM(TestCase):
     def setUp(self):
         self.img_height = 48
-        self.generator = BatchGeneratorIAMHandwriting('../../fixtures/iam_handwriting/', self.img_height)
+        self.generator = BatchGeneratorIAMHandwriting('fixtures/iam_handwriting/', self.img_height)
 
     def test_len(self):
         self.assertEqual(len(self.generator), 7)
@@ -33,3 +34,7 @@ class TestBatchGeneratorManuscript(TestCase):
         self.assertEqual(len(y.shape), 2)
         self.assertEqual(len(x_widths.shape), 1)
         self.assertEqual(len(y_widths.shape), 1)
+
+        plt.title(y)
+        plt.imshow(x[0, :, :, 0].T)
+        plt.show(block=True)
