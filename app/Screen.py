@@ -108,13 +108,24 @@ class Ocr_screen(QtGui.QTabWidget):
         self.label_left = QtGui.QLabel("Select training parameters :")
         self.label_left.setFont(font)
         
-        # Bottom layout
+        # Start
         self.start_train_button = QtGui.QPushButton("Start training")
         self.start_train_button.setFont(font)
-        self.pause_train_button = QtGui.QPushButton("Pause training")
-        self.pause_train_button.setFont(font)
-        self.end_train_button = QtGui.QPushButton("End training")
-        self.end_train_button.setFont(font)
+        
+        # Select nb epoch
+        self.label_epoch = QtGui.QLabel("Select number of epochs :")
+        self.set_epoch = QtGui.QComboBox()
+        self.set_epoch.addItem("100")
+        self.set_epoch.addItem("500")
+        self.set_epoch.addItem("1000")
+        self.apply_epoch = QtGui.QPushButton("Apply")
+        self.bottom_panel = QtGui.QHBoxLayout()
+        self.bottom_panel.addWidget(self.label_epoch)
+        self.bottom_panel.addWidget(self.set_epoch)
+        self.bottom_panel.addWidget(self.apply_epoch)
+        self.spacerino = QtGui.QSpacerItem(100, 20)
+        self.bottom_panel.addItem(self.spacerino)
+        self.bottom_panel.addWidget(self.start_train_button)
         
         # Right pannel :
         self.label_gt = QtGui.QLabel("Ground truth :")
@@ -166,12 +177,7 @@ class Ocr_screen(QtGui.QTabWidget):
         self.main_panel.addLayout(self.left_panel)
         self.main_panel.addItem(self.big_spacer)
         self.main_panel.addLayout(self.right_panel)
-        
-        # Bottom Layout
-        self.bottom_panel = QtGui.QHBoxLayout()
-        self.bottom_panel.addWidget(self.start_train_button)
-        self.bottom_panel.addWidget(self.pause_train_button)
-        self.bottom_panel.addWidget(self.end_train_button)
+    
         
         # Final Layout
         self.Final_panel = QtGui.QVBoxLayout()

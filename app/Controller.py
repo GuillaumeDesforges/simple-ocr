@@ -5,6 +5,7 @@ os.chdir(path)
 
 from Screen import *
 from Msg_screen import *
+from Progress_screen import *
 
 class Controller:
     def __init__(self, ui):
@@ -20,6 +21,11 @@ class Controller:
         self.network_name = self.network_names[0]
         self.page_names = ["Bodmer - p1", "Bodmer - p2"]
         self.page_name = self.page_names[0]
+        self.nb_epoch = 100
+        
+        self.epoch_end = False
+        self.pause = False
+        self.end = False
     
     
     ## Train Window ##
@@ -28,19 +34,19 @@ class Controller:
         self.ui.apply_lrate.clicked.connect(self.set_lrate)
         self.ui.apply_optimizer.clicked.connect(self.set_optimizer)
         self.ui.apply_model.clicked.connect(self.set_model)
-        self.ui.pause_train_button.clicked.connect(self.pause_train)
-        self.ui.start_train_button.clicked.connect(self.start_train)
-        self.ui.end_train_button.clicked.connect(self.end_train)
         
-        self.ui.pause_train_button.setEnabled(False)
-        self.ui.end_train_button.setEnabled(False)
+        self.ui.start_train_button.clicked.connect(self.start_train)
+        
+        
+        # self.ui.pause_train_button.setEnabled(False)
+        # self.ui.end_train_button.setEnabled(False)
         
     
     def start_train(self):
         # TODO
         self.ui.start_train_button.setEnabled(False)
-        self.ui.pause_train_button.setEnabled(True)
-        self.ui.end_train_button.setEnabled(True)
+        # self.ui.pause_train_button.setEnabled(True)
+        # self.ui.end_train_button.setEnabled(True)
         self.ui.apply_lrate.setEnabled(False)
         self.ui.apply_model.setEnabled(False)
         self.ui.apply_optimizer.setEnabled(False)
@@ -48,36 +54,57 @@ class Controller:
     
     def pause_train(self):
         # TODO
+        self.pause = True
+        self.progress()
         
-        self.ui.start_train_button.setEnabled(True)
-        self.ui.pause_train_button.setEnabled(False)
-        self.ui.apply_lrate.setEnabled(True)
-        self.ui.apply_model.setEnabled(True)
-        self.ui.apply_optimizer.setEnabled(True)
+        if self.pause:
+            # self.ui.start_train_button.setEnabled(True)
+            # self.ui.pause_train_button.setEnabled(False)
+            self.ui.apply_lrate.setEnabled(True)
+            self.ui.apply_model.setEnabled(True)
+            self.ui.apply_optimizer.setEnabled(True)
+            
+            #Reset self.pause to false sometimes
 
         
     def end_train(self):
         # TODO
         
-        # Lets the user chose the network name
-        app = QtGui.QApplication(sys.argv)
-        window = SaveWindow(self)
-        app.exec_()
-
+        self.end = True 
+        self.progress()
         
-        self.ui.pause_train_button.setEnabled(False)
-        self.ui.end_train_button.setEnabled(False)
-        self.ui.apply_lrate.setEnabled(True)
-        self.ui.apply_model.setEnabled(True)
-        self.ui.start_train_button.setEnabled(True)
-        self.ui.apply_optimizer.setEnabled(True)
+        if self.end :
+            # Lets the user chose the network name
+            app = QtGui.QApplication(sys.argv)
+            window = SaveWindow(self)
+            app.exec_()
     
+            # self.ui.pause_train_button.setEnabled(False)
+            # self.ui.end_train_button.setEnabled(False)
+            self.ui.apply_lrate.setEnabled(True)
+            self.ui.apply_model.setEnabled(True)
+            self.ui.start_train_button.setEnabled(True)
+            self.ui.apply_optimizer.setEnabled(True)
+    
+    
+    def progress(self):     
+        app = QtGui.QApplication(sys.argv)
+        window = ProgressWindow(self)
+        app.exec_()
+        
+        while window.open:
+            app.processEvents()
+
+
     def set_lrate(self):
         if self.ui.set_lrate.currentText() == "Adaptative" :
             # Todo
             pass
         else : 
             self.lrate=float(self.ui.set_lrate.currentText())
+            
+    def set_epoch(self):
+        self.nb_epoch=float(self.ui.set_epoch.currentText())
         
         
     def set_model(self):
@@ -110,6 +137,7 @@ class Controller:
         item = self.ui.scene.addPixmap(pixmap)
         self.ui.screen.setScene(self.ui.scene)
     
+
     
     ## Test Window ##
     
@@ -194,6 +222,8 @@ class Controller:
     def pause_eval(self):
         # TODO
         
+        
+        
         self.ui.start_eval_button.setEnabled(True)
         self.ui.pause_eval_button.setEnabled(False)
 
@@ -201,13 +231,16 @@ class Controller:
     def end_eval(self):
         # TODO
         
+        
+        
         self.ui.start_eval_button.setEnabled(True)
         self.ui.pause_eval_button.setEnabled(False)
         self.ui.end_eval_button.setEnabled(False)
         self.ui.apply_page.setEnabled(True)
         self.ui.apply_network2.setEnabled(True)
     
-    
+
+        
     def set_network_eval(self):
         self.network_name = self.ui.select_network2.currentText()
     
