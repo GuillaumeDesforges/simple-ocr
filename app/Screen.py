@@ -182,6 +182,8 @@ class Ocr_screen(QtGui.QTabWidget):
         # Final Layout
         self.Final_panel = QtGui.QVBoxLayout()
         self.Final_panel.addLayout(self.main_panel)
+        self.spacerino2 = QtGui.QSpacerItem(20, 30)
+        self.Final_panel.addItem(self.spacerino2)
         self.Final_panel.addLayout(self.bottom_panel)
     
         self.tab1.setLayout(self.Final_panel)
@@ -356,6 +358,7 @@ class Ocr_screen(QtGui.QTabWidget):
         self.Final_panel3.addLayout(self.page_panel)
         self.Final_panel3.addLayout(self.network_panel2)
         self.Final_panel3.addLayout(self.right_panel3)
+
         self.Final_panel3.addLayout(self.bottom_panel3)
         
     
