@@ -12,7 +12,7 @@ The main repository for this project is : https://github.com/GuillaumeDesforges/
 ### Objectives
 
 Our objective is to devellop an easy to use API for Optical Character Recognition.
-Theoritically, this repository is meant to be a "*base for future OCR development*" rather than an example.
+An interesting thing in this project was how we used `keras.backend.ctc_batch_cost` and `keras.backend.ctc_decode`. Their use is not trivial and looking at our code may help quite a lot if you have no idea where to start !
 
 ### Main library used :
 * Keras for the neural networks.
