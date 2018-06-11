@@ -1,5 +1,6 @@
 # A simple API for OCR
-### Guillaume Desfoges, Théo Viel
+
+**Guillaume Desfoges, Théo Viel**
 
 ## Introduction 
 
@@ -15,7 +16,7 @@ Our objective is to devellop an easy to use API for Optical Character Recognitio
 An interesting thing in this project was how we used `keras.backend.ctc_batch_cost` and `keras.backend.ctc_decode`. Their use is not trivial and looking at our code may help quite a lot if you have no idea where to start !
 
 ### Main library used :
-* Keras for the neural networks.
-* Tensorflow as backend.
-* Pyqt for the API.
+* Keras for the neural networks
+* Tensorflow as backend
+* Pyqt for the GUI
 
